@@ -1,6 +1,6 @@
-package com.umollu.continuebutton.mixin;
+package com.mineblock11.continuebutton.mixin;
 
-import com.umollu.continuebutton.ContinueButtonMod;
+import com.mineblock11.continuebutton.ContinueButtonMod;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.world.ClientWorld;
@@ -13,16 +13,18 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(MinecraftClient.class)
 public abstract class MixinMinecraftClient {
-    @Shadow public @Nullable abstract ServerInfo getCurrentServerEntry();
+    @Shadow
+    public @Nullable
+    abstract ServerInfo getCurrentServerEntry();
 
     @Inject(at = @At("TAIL"), method = "joinWorld(Lnet/minecraft/client/world/ClientWorld;)V")
     public void joinWorld(ClientWorld world, CallbackInfo info) {
-        if(this.getCurrentServerEntry() != null) {
-            ContinueButtonMod.lastLocal = false;
+        if (this.getCurrentServerEntry() != null) {
+            ContinueButtonMod.wasLastWorldLocal = false;
             ContinueButtonMod.serverName = this.getCurrentServerEntry().name;
             ContinueButtonMod.serverAddress = this.getCurrentServerEntry().address;
         } else {
-            ContinueButtonMod.lastLocal = true;
+            ContinueButtonMod.wasLastWorldLocal = true;
         }
         ContinueButtonMod.saveConfig();
     }

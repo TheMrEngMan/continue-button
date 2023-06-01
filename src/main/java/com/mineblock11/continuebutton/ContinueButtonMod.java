@@ -1,4 +1,4 @@
-package com.umollu.continuebutton;
+package com.mineblock11.continuebutton;
 
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
@@ -11,12 +11,13 @@ import java.util.Properties;
 
 public class ContinueButtonMod implements ClientModInitializer {
 
-    public static boolean lastLocal = true;
+    public static boolean wasLastWorldLocal = true;
     public static String serverName = "";
     public static String serverAddress = "";
 
     @Override
     public void onInitializeClient() {
+
     }
 
     public static void saveConfig() {
@@ -27,7 +28,7 @@ public class ContinueButtonMod implements ClientModInitializer {
             properties.load(stream);
         } catch (IOException e) {
         }
-        properties.setProperty("last-local", lastLocal? "true" : "false");
+        properties.setProperty("last-local", wasLastWorldLocal ? "true" : "false");
         properties.setProperty("server-name", serverName);
         properties.setProperty("server-address", serverAddress);
         try (FileOutputStream stream = new FileOutputStream(configFile)) {
@@ -54,7 +55,7 @@ public class ContinueButtonMod implements ClientModInitializer {
             }
         }
 
-        lastLocal = ((String) properties.computeIfAbsent("last-local", (a) -> "true")).equals("true");
+        wasLastWorldLocal = ((String) properties.computeIfAbsent("last-local", (a) -> "true")).equals("true");
         serverName = ((String) properties.computeIfAbsent("server-name", (a) -> ""));
         serverAddress = ((String) properties.computeIfAbsent("server-address", (a) -> ""));
 
