@@ -1,10 +1,12 @@
 package com.mineblock11.continuebutton.mixin;
 
 import com.mineblock11.continuebutton.ContinueButtonMod;
-import it.unimi.dsi.fastutil.longs.LongComparators;
+import com.mineblock11.continuebutton.ContinueButtonWidget;
 import net.fabricmc.fabric.api.client.screen.v1.Screens;
+import net.minecraft.client.font.TextHandler;
 import net.minecraft.client.gui.screen.*;
 import net.minecraft.client.gui.screen.world.CreateWorldScreen;
+import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.network.MultiplayerServerListPinger;
@@ -15,6 +17,8 @@ import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.text.CharacterVisitor;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -27,10 +31,10 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Mixin(value = TitleScreen.class, priority = 1001)
 public class MixinTitleScreen extends Screen {
@@ -46,10 +50,8 @@ public class MixinTitleScreen extends Screen {
 
     @Inject(at = @At("HEAD"), method = "initWidgetsNormal")
     public void drawMenuButton(int y, int spacingY, CallbackInfo info) {
-            ButtonWidget continueButton = new ButtonWidget(this.width / 2 - 100, y, 98, 20, Text.translatable("continuebutton.continueButtonTitle"), button -> {
+            ButtonWidget continueButton = new ContinueButtonWidget(this.width / 2 - 100, y, 98, 20, button -> {
                 if (ContinueButtonMod.wasLastWorldLocal) {
-                    button.active = false;
-                    LevelStorage levelStorage = this.client.getLevelStorage();
                     if (levels.isEmpty()) {
                         CreateWorldScreen.create(client, this);
                     } else {
@@ -75,13 +77,11 @@ public class MixinTitleScreen extends Screen {
                             } else {
                                 start();
                             }
-
                         }
                     }
                 } else {
                     ConnectScreen.connect(this, this.client, ServerAddress.parse(serverInfo.address), serverInfo);
                 }
-
             }, (button, matrixStack, i, j) -> {
                 if (ContinueButtonMod.wasLastWorldLocal) {
                     if (level == null) {
@@ -109,7 +109,7 @@ public class MixinTitleScreen extends Screen {
             this.client.setScreenAndRender(new MessageScreen(Text.translatable("selectWorld.data_read")));
             try {
                 LevelStorage.Session session = this.client.getLevelStorage().createSession(this.level.getName());
-                this.client.startIntegratedServer(this.level.getName(), session, this.client.getResourcePackManager(), this.client.createIntegratedServerLoader().createSaveLoader(session, false));
+                this.client.startIntegratedServer(this.level.getName(), session, this.client.getResourcePackManager(), this.client.createIntegratedServerLoader().createSaveLoader(session, false), false);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -125,7 +125,7 @@ public class MixinTitleScreen extends Screen {
     public void init(CallbackInfo info) {
         for (ClickableWidget button : Screens.getButtons(this)) {
             if (button.visible && !button.getMessage().equals(Text.translatable("continuebutton.continueButtonTitle"))) {
-                button.x = this.width / 2 + 2;
+                button.setX(this.width / 2 + 2);
                 button.setWidth(98);
                 break;
             }
@@ -172,7 +172,7 @@ public class MixinTitleScreen extends Screen {
                     ContinueButtonMod.serverAddress = serverInfo.address;
                     ContinueButtonMod.saveConfig();
 
-                    serverInfo.label = Text.literal("multiplayer.status.pinging");
+                    serverInfo.label = Text.translatable("multiplayer.status.pinging");
                     try {
                         serverListPinger.add(serverInfo, () -> {
                         });
