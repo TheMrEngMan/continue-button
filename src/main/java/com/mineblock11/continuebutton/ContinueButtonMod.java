@@ -8,27 +8,25 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
-
 public class ContinueButtonMod implements ClientModInitializer {
 
-    public static boolean wasLastWorldLocal = true;
+    public static boolean lastLocal = true;
     public static String serverName = "";
     public static String serverAddress = "";
 
     @Override
     public void onInitializeClient() {
-
     }
 
     public static void saveConfig() {
-        File configDir = new File(FabricLoader.getInstance().getConfigDirectory(), "continuebutton");
+        File configDir = new File(FabricLoader.getInstance().getConfigDir().toFile(), "continuebutton");
         File configFile = new File(configDir, "config.properties");
         Properties properties = new Properties();
         try (FileInputStream stream = new FileInputStream(configFile)) {
             properties.load(stream);
         } catch (IOException e) {
         }
-        properties.setProperty("last-local", wasLastWorldLocal ? "true" : "false");
+        properties.setProperty("last-local", lastLocal? "true" : "false");
         properties.setProperty("server-name", serverName);
         properties.setProperty("server-address", serverAddress);
         try (FileOutputStream stream = new FileOutputStream(configFile)) {
@@ -38,7 +36,7 @@ public class ContinueButtonMod implements ClientModInitializer {
     }
 
     static {
-        File configDir = new File(FabricLoader.getInstance().getConfigDirectory(), "continuebutton");
+        File configDir = new File(FabricLoader.getInstance().getConfigDir().toFile(), "continuebutton");
 
         if (!configDir.exists()) {
             if (!configDir.mkdir()) {
@@ -55,7 +53,7 @@ public class ContinueButtonMod implements ClientModInitializer {
             }
         }
 
-        wasLastWorldLocal = ((String) properties.computeIfAbsent("last-local", (a) -> "true")).equals("true");
+        lastLocal = ((String) properties.computeIfAbsent("last-local", (a) -> "true")).equals("true");
         serverName = ((String) properties.computeIfAbsent("server-name", (a) -> ""));
         serverAddress = ((String) properties.computeIfAbsent("server-address", (a) -> ""));
 
