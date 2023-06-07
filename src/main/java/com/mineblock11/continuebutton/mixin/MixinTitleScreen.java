@@ -2,6 +2,7 @@ package com.mineblock11.continuebutton.mixin;
 
 import com.mineblock11.continuebutton.ContinueButtonMod;
 import net.fabricmc.fabric.api.client.screen.v1.Screens;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.*;
 import net.minecraft.client.gui.screen.world.CreateWorldScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -86,7 +87,7 @@ public class MixinTitleScreen extends Screen {
                 }
             }
             else {
-                ConnectScreen.connect(this, this.client, ServerAddress.parse(serverInfo.address), serverInfo);
+                ConnectScreen.connect(this, this.client, ServerAddress.parse(serverInfo.address), serverInfo, false);
             }
         });
         continueButtonBuilder.dimensions(this.width / 2 - 100, y, 98, 20);
@@ -174,7 +175,7 @@ public class MixinTitleScreen extends Screen {
     }
 
     @Inject(at = @At("HEAD"), method = "render")
-    public void renderAtHead(MatrixStack matrices, int mouseX, int mouseY, float delta, CallbackInfo info) {
+    public void renderAtHead(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
         if(isFirstRender) {
             isFirstRender = false;
             atFirstRender();
@@ -182,25 +183,24 @@ public class MixinTitleScreen extends Screen {
     }
 
     @Inject(at = @At("TAIL"), method = "render")
-    public void renderAtTail(MatrixStack matrices, int mouseX, int mouseY, float delta, CallbackInfo info) {
-
+    public void renderAtTail(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
         if(readyToSetTooltip) {
             if(continueButtonWidget.isHovered()) {
                 if (ContinueButtonMod.lastLocal) {
                     if (localLevel == null) {
                         List<OrderedText> list = new ArrayList<>();
                         list.add(Text.translatable("selectWorld.create").formatted(Formatting.GRAY).asOrderedText());
-                        this.renderOrderedTooltip(matrices, list, mouseX, mouseY);
+                        context.drawOrderedTooltip(this.textRenderer, list, mouseX, mouseY);
                     } else {
                         List<OrderedText> list = new ArrayList<>();
                         list.add(Text.translatable("menu.singleplayer").formatted(Formatting.GRAY).asOrderedText());
                         list.add(Text.literal(localLevel.getDisplayName()).asOrderedText());
-                        this.renderOrderedTooltip(matrices, list, mouseX, mouseY);
+                        context.drawOrderedTooltip(this.textRenderer, list, mouseX, mouseY);
                     }
                 } else if (serverInfo != null) {
                     List<OrderedText> list = new ArrayList<>(this.client.textRenderer.wrapLines(serverInfo.label, 270));
                     list.add(0, Text.literal(serverInfo.name).formatted(Formatting.GRAY).asOrderedText());
-                    this.renderOrderedTooltip(matrices, list, mouseX, mouseY);
+                    context.drawOrderedTooltip(this.textRenderer, list, mouseX, mouseY);
                 }
             }
         }
