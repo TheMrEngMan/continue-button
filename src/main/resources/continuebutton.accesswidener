@@ -1,0 +1,5 @@
+accessWidener   v1  named
+
+accessible method net/minecraft/client/QuickPlay startSingleplayer (Lnet/minecraft/client/MinecraftClient;Ljava/lang/String;)V
+accessible method net/minecraft/client/QuickPlay startMultiplayer (Lnet/minecraft/client/MinecraftClient;Ljava/lang/String;)V
+accessible method net/minecraft/client/QuickPlay startRealms (Lnet/minecraft/client/MinecraftClient;Lnet/minecraft/client/realms/RealmsClient;Ljava/lang/String;)V

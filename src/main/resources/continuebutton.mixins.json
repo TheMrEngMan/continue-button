@@ -4,8 +4,7 @@
   "package": "com.mineblock11.continuebutton.mixin",
   "compatibilityLevel": "JAVA_8",
   "client": [
-    "MixinTitleScreen",
-    "MixinClientPlayNetworkHandler"
+    "MixinTitleScreen"
   ],
   "injectors": {
     "defaultRequire": 1

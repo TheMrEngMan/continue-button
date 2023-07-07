@@ -6,7 +6,13 @@ plugins {
 version = project.mod_version
 group = project.maven_group
 
-repositories {}
+repositories {
+	mavenCentral()
+}
+
+loom {
+	accessWidenerPath = file("src/main/resources/continuebutton.accesswidener")
+}
 
 dependencies {
 	// To change the versions see the gradle.properties file
@@ -16,6 +22,7 @@ dependencies {
 
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+	modImplementation "com.ptsmods:devlogin:3.2.2"
 }
 
 processResources {

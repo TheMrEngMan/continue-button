@@ -1,21 +1,49 @@
 package com.mineblock11.continuebutton;
 
+import com.google.common.io.Files;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.networking.v1.ClientLoginConnectionEvents;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
+import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayNetworkHandler;
+import net.minecraft.client.network.MultiplayerServerListPinger;
+import net.minecraft.client.network.ServerInfo;
+import net.minecraft.util.WorldSavePath;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Properties;
 public class ContinueButtonMod implements ClientModInitializer {
-
+    private static boolean isInServerList = false;
     public static boolean lastLocal = true;
     public static String serverName = "";
     public static String serverAddress = "";
 
     @Override
     public void onInitializeClient() {
+        ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
+            if(client.isIntegratedServerRunning())
+            {
+                // Singleplayer
+                lastLocal = true;
+                String levelName = client.getServer().getSaveProperties().getLevelName();
+                Path pathtoSave = Path.of(Files.simplifyPath(client.getServer().getSavePath(WorldSavePath.ROOT).toString()));
+                String folderName = pathtoSave.toFile().getName();
+                serverName = levelName;
+                serverAddress = folderName;
+            } else {
+                ServerInfo serverInfo = client.getCurrentServerEntry();
+                lastLocal = false;
+                serverName = serverInfo.name;
+                serverAddress = serverInfo.address;
+            }
+            saveConfig();
+        });
     }
 
     public static void saveConfig() {

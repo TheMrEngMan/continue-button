@@ -16,6 +16,7 @@
   "license": "MIT",
   "icon": "assets/continuebutton/icon.png",
   "environment": "*",
+  "accessWidener": "continuebutton.accesswidener",
   "entrypoints": {
     "client": [
       "com.mineblock11.continuebutton.ContinueButtonMod"
