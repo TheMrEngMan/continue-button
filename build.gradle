@@ -56,21 +56,3 @@ jar {
 		rename { "${it}_${project.archivesBaseName}" }
 	}
 }
-
-publishing {
-	// configure the maven publication
-	publications {
-		mavenJava(MavenPublication) {
-			from components.java
-		}
-	}
-
-// See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
-	repositories {
-		maven {
-			name "mineblockMaven"
-			url "https://maven.mineblock11.dev/releases"
-			credentials(PasswordCredentials)
-		}
-	}
-}
