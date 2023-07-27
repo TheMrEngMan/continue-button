@@ -11,6 +11,7 @@ import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.MultiplayerServerListPinger;
 import net.minecraft.client.network.ServerInfo;
 import net.minecraft.util.WorldSavePath;
+import net.minecraft.world.level.storage.LevelStorage;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -31,7 +32,7 @@ public class ContinueButtonMod implements ClientModInitializer {
             {
                 // Singleplayer
                 lastLocal = true;
-                String levelName = client.getServer().getSaveProperties().getLevelName();
+                String levelName = client.getLevelStorage().getLevelList().levels().get(0).getRootPath();
                 Path pathtoSave = Path.of(Files.simplifyPath(client.getServer().getSavePath(WorldSavePath.ROOT).toString()));
                 String folderName = pathtoSave.toFile().getName();
                 serverName = levelName;
