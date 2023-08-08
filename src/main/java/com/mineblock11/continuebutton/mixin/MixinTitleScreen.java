@@ -48,7 +48,7 @@ public class MixinTitleScreen extends Screen {
         ButtonWidget.Builder continueButtonBuilder = ButtonWidget.builder(Text.translatable("continuebutton.continueButtonTitle") , button -> {
             if(ContinueButtonMod.lastLocal) {
                 if(!ContinueButtonMod.serverName.isBlank()) {
-                    QuickPlay.startSingleplayer(client, ContinueButtonMod.serverName);
+                    QuickPlay.startSingleplayer(client, ContinueButtonMod.removeIllegalCharacters(ContinueButtonMod.serverName, false));
                 } else {
                     CreateWorldScreen.create(this.client, this);
                 }
