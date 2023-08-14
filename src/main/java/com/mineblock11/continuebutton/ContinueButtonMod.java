@@ -15,10 +15,10 @@ import java.nio.file.Path;
 import java.util.Properties;
 
 public class ContinueButtonMod implements ClientModInitializer {
+    private static final boolean isInServerList = false;
     public static boolean lastLocal = true;
     public static String serverName = "";
     public static String serverAddress = "";
-    private static final boolean isInServerList = false;
 
     static {
         File configDir = new File(FabricLoader.getInstance().getConfigDir().toFile(), "continuebutton");
@@ -48,20 +48,8 @@ public class ContinueButtonMod implements ClientModInitializer {
         }
     }
 
-    public static final String removeIllegalCharacters(String name,
-                                                       final boolean singleSpaces) {
-        String safe = name.trim();
-        safe = safe.replaceAll(
-                "[\\/|\\\\|\\*|\\:|\\||\"|'|\\<|\\>|\\{|\\}|\\?|\\%|,]",
-                "");
-        safe = safe.replaceAll("\\.", "_");
-        if (safe.endsWith("_")) {
-            safe = safe.substring(0, safe.length() - 1);
-        }
-        safe = safe.replaceAll("\\s+", "_");
-        if (singleSpaces) {
-            safe = safe.replaceAll("_{2,}", "_");
-        }
+    public static final String removeIllegalCharacters(String name) {
+        String safe = name.replaceAll("[\\\\\\\\/:*?\\\"<>|]", "_");
         return safe;
     }
 
